@@ -1,7 +1,8 @@
 import express from 'express';
+const app = express();
 import { engine } from 'express-handlebars';
 import bodyParser from 'body-parser';
-const app = express();
+import {Post} from "./models/post.js";
 var port = 8081;
 
 
@@ -16,6 +17,11 @@ var port = 8081;
 
 
 // Rotas
+
+app.get('/', (req, res) => {
+    res.render('home');
+});
+
 app.get('/cadastro', (req, res) => {
     res.render('formulario');
 });
@@ -24,7 +30,14 @@ app.post('/add', (req, res) => {
     const titulo = req.body.titulo;
     const conteudo = req.body.conteudo;
 
-    res.send(`Titulo: ${titulo}. Conteudo: ${conteudo}`);
+    Post.create({
+        titulo: titulo,
+        conteudo: conteudo
+    }).then(() => {
+        res.redirect('/');
+    }).catch((erro) => {
+        res.send(`[OPS] Erro ao cadastrar um Post: ${erro}`);
+    });
 });
 
 
